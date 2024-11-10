@@ -7,6 +7,10 @@ import numpy as np
 # Load the trained model
 model_path ='Loan_detection/model.pkl'  # Ensure this path is correct
 model = None
+if os.path.exists(model_path):
+    st.success("Model file found.")
+else:
+    st.error(f"Model file not found at {model_path}. Please check the path.")
 
 if os.path.exists(model_path):
     try:
