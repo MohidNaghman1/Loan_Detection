@@ -5,7 +5,7 @@ import os
 import numpy as np
 
 # Load the trained model
-model_path = 'model.pkl'  # Ensure this path is correct
+model_path ='Loan_detection/model.pkl'  # Ensure this path is correct
 model = None
 
 if os.path.exists(model_path):
