@@ -17,12 +17,14 @@ if os.path.exists(model_path):
         st.success("Model loaded successfully.")
     except Exception as e:
         st.error(f"An error occurred while loading the model: {str(e)}")
+        st.error("Make sure the model file is not corrupted and all dependencies are installed.")
 else:
     st.error(f"Model file not found at {model_path}. Please check the path.")
 
-if model is not None:
-    st.success("Model loaded successfully.")
-    st.write(f"Model type: {type(model)}")
+if model is None:
+    st.error("Model is not loaded. Please check the loading process.")
+else:
+    st.success("Model is ready to use.")
 
 def preprocess_data(data):
     data['Gender'] = data['Gender'].map({'Male': 1, 'Female': 0})
