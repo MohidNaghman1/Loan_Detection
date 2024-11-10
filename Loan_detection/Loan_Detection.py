@@ -89,8 +89,8 @@ with st.form("loan_form"):
     with col2:
         applicant_income = st.number_input("Applicant Income", min_value=0, step=100)
         coapplicant_income = st.number_input("Coapplicant Income", min_value=0, step=100)
-        loan_amount = st.number_input("Loan Amount", min_value=10000, max_value=1000000, step=1000)
-        loan_amount_term = st.number_input("Loan Amount Term (months)", min_value=0, step=1)
+        loan_amount = st.number_input("Loan Amount", min_value=10, max_value=1000000, step=10)
+        loan_amount_term = st.number_input("Loan Amount Term", min_value=0, step=1)
         credit_history = st.selectbox("Credit History", ["0", "1"])
         property_area = st.selectbox("Property Area", ["Urban", "Semiurban", "Rural"])
     
@@ -112,10 +112,21 @@ if submitted:
         'Property_Area': [property_area]
     })
     
-    prediction = predict_loan_status(data)
-    
+prediction = predict_loan_status(data)
+# Assuming prediction is the output from the model
+if prediction is not None:
+    st.write("Prediction output:", prediction)  # Debugging output
+
+    # Check if prediction is an array-like structure
     if isinstance(prediction, (list, np.ndarray)):
-        result = "Approved" if prediction[0] == 1 else "Rejected"
+        # Handle the case where the model outputs an array
+        if len(prediction) > 0:
+            result = "Approved" if prediction[0] == 1 else "Rejected"
+        else:
+            st.error("Prediction output is empty.")
+            result = "Unknown"
     else:
+        # Handle the case where the model outputs a single value
         result = "Approved" if prediction == 1 else "Rejected"
+
     st.write("Loan Status:", result)
