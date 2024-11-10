@@ -1,13 +1,11 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import pickle
 import os
+import numpy as np
 
-# Define the model path
-model_path = 'Loan_detection/model.pkl'  # Update this path as necessary
-
-# Initialize model variable
+# Load the trained model
+model_path = 'model.pkl'  # Ensure this path is correct
 model = None
 
 if os.path.exists(model_path):
@@ -20,10 +18,7 @@ if os.path.exists(model_path):
 else:
     st.error(f"Model file not found at {model_path}. Please check the path and ensure the file exists.")
 
-
-# Create a function to preprocess the input data
 def preprocess_data(data):
-    # Map categorical variables to numerical values
     data['Gender'] = data['Gender'].map({'Male': 1, 'Female': 0})
     data['Married'] = data['Married'].map({'Yes': 1, 'No': 0})
     data['Dependents'] = data['Dependents'].map({'0': 0, '1': 1, '2': 2, '3+': 3})
@@ -32,34 +27,46 @@ def preprocess_data(data):
     data['Property_Area'] = data['Property_Area'].map({'Urban': 1, 'Semiurban': 2, 'Rural': 3})
 
     return data
-    
 
-
-# Create a function to make predictions
 def predict_loan_status(data):
-    if 'model' not in globals():
-       st.error("Model is not loaded. Please check the loading process.")
-    return None
+    if model is None:
+        st.error("Model is not loaded. Please check the loading process.")
+        return None
+
     # Preprocess the input data
     data = preprocess_data(data)
 
-    # Debugging output to check the structure of the input data
+    # Ensure data is in the correct format
     st.write("Input data for prediction:", data)
 
     try:
-        # Make the prediction
+        # Make prediction
         prediction = model.predict(data)
-        return prediction
+        st.write("Prediction output:", prediction)  # Debugging output
+
+        # Check if prediction is an array-like structure
+        if isinstance(prediction, (list, np.ndarray)):
+            if len(prediction) > 0:
+                result = "Approved" if prediction[0] == 1 else "Rejected"
+            else:
+                st.error("Prediction output is empty.")
+                result = "Unknown"
+        else:
+            result = "Approved" if prediction == 1 else "Rejected"
+
+        return result
+
     except Exception as e:
         st.error(f"An error occurred during prediction: {str(e)}")
         return None
 
-# Create a Streamlit app
+# Streamlit UI
 st.title("Loan Status Predictor")
 st.write("Please enter the required details to predict the loan status")
 
-# Create input fields for the user to enter the required details
+# Collect user input
 with st.form("loan_form"):
+    # Input fields for user data
     col1, col2 = st.columns(2)
     
     with col1:
@@ -76,11 +83,11 @@ with st.form("loan_form"):
         loan_amount_term = st.number_input("Loan Amount Term", min_value=0, step=1)
         credit_history = st.selectbox("Credit History", ["0", "1"])
         property_area = st.selectbox("Property Area", ["Urban", "Semiurban", "Rural"])
-    
+    # Example: gender = st.selectbox("Gender", ["Male", "Female"])
     submitted = st.form_submit_button("Predict")
 
-# Make predictions using the input data
 if submitted:
+    # Create a DataFrame from user input
     data = pd.DataFrame({
         'Gender': [gender],
         'Married': [married],
@@ -95,21 +102,7 @@ if submitted:
         'Property_Area': [property_area]
     })
     
-prediction = predict_loan_status(data)
-# Assuming prediction is the output from the model
-if prediction is not None:
-    st.write("Prediction output:", prediction)  # Debugging output
-
-    # Check if prediction is an array-like structure
-    if isinstance(prediction, (list, np.ndarray)):
-        # Handle the case where the model outputs an array
-        if len(prediction) > 0:
-            result = "Approved" if prediction[0] == 1 else "Rejected"
-        else:
-            st.error("Prediction output is empty.")
-            result = "Unknown"
-    else:
-        # Handle the case where the model outputs a single value
-        result = "Approved" if prediction == 1 else "Rejected"
-
-    st.write("Loan Status:", result)
+    prediction_result = predict_loan_status(data)
+    
+    if prediction_result is not None:
+        st.write("Loan Status:", prediction_result)
