@@ -34,9 +34,36 @@ def preprocess_data(data):
 
 # Create a function to make predictions
 def predict_loan_status(data):
+    # Preprocess the input data
     data = preprocess_data(data)
-    prediction = model.predict(data)
-    return prediction
+
+    # Debugging output to check the structure of the input data
+    st.write("Input data for prediction:", data)
+
+    # Check shape and columns
+    st.write("Data shape:", data.shape)
+    st.write("Data columns:", data.columns.tolist())
+
+    expected_columns = ['Gender', 'Married', 'Dependents', 'Education', 'Self_Employed', 
+                        'ApplicantIncome', 'CoapplicantIncome', 'LoanAmount', 
+                        'Loan_Amount_Term', 'Credit_History', 'Property_Area']
+    
+    if list(data.columns) != expected_columns:
+        st.error("Input data columns do not match the expected columns.")
+        return None
+
+    # Ensure there are no NaN values
+    if data.isnull().any().any():
+        st.error("Input data contains NaN values.")
+        return None
+    
+    try:
+        # Make the prediction
+        prediction = model.predict(data)
+        return prediction
+    except Exception as e:
+        st.error(f"An error occurred during prediction: {str(e)}")
+        return None
 
 # Create a Streamlit app
 st.title("Loan Status Predictor")
