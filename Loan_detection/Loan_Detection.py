@@ -3,6 +3,11 @@ import pandas as pd
 import pickle
 import os
 import numpy as np
+try:
+    import sklearn
+    st.success("scikit-learn is available.")
+except ImportError:
+    st.error("scikit-learn is not installed.")
 
 # Load the trained model
 model_path = '/mount/src/loan_detection/Loan_detection/model.pkl'
