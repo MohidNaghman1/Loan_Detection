@@ -34,6 +34,9 @@ def preprocess_data(data):
 
 # Create a function to make predictions
 def predict_loan_status(data):
+    if 'model' not in globals():
+       st.error("Model is not loaded. Please check the loading process.")
+    return None
     # Preprocess the input data
     data = preprocess_data(data)
 
@@ -108,5 +111,8 @@ if submitted:
     
     prediction = predict_loan_status(data)
     
-    st.write("Loan Status:", "Approved" if prediction[0] == 1 else "Rejected")
-    st.write("Prediction Confidence:", prediction)
+    if isinstance(prediction, (list, np.ndarray)):
+        result = "Approved" if prediction[0] == 1 else "Rejected"
+    else:
+        result = "Approved" if prediction == 1 else "Rejected"
+    st.write("Loan Status:", result)
