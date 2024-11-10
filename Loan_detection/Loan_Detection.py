@@ -7,12 +7,23 @@ import numpy as np
 # Load the trained model
 model_path = '/mount/src/loan_detection/Loan_detection/model.pkl'
 model = None
-try:
-    with open(model_path, 'rb') as f:
-        model = pickle.load(f)
-    print("Model loaded successfully!")
-except Exception as e:
-    print(f"Error loading model: {str(e)}")
+
+# Check if the model file exists
+if os.path.exists(model_path):
+    st.success("Model file found.")
+    try:
+        with open(model_path, 'rb') as f:
+            model = pickle.load(f)
+        st.success("Model loaded successfully.")
+    except Exception as e:
+        st.error(f"An error occurred while loading the model: {str(e)}")
+else:
+    st.error(f"Model file not found at {model_path}. Please check the path.")
+
+if model is None:
+    st.error("Model is not loaded. Please check the loading process.")
+else:
+    st.success("Model is ready to use.")
 
 def preprocess_data(data):
     data['Gender'] = data['Gender'].map({'Male': 1, 'Female': 0})
