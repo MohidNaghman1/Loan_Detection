@@ -1,21 +1,24 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import pickle
 import os
 
 # Define the model path
 model_path = 'Loan_detection/model.pkl'  # Update this path as necessary
 
-# Check if the model file exists
-if not os.path.exists(model_path):
-    st.error(f"Model file not found at {model_path}. Please check the path and ensure the file exists.")
-else:
+# Initialize model variable
+model = None
+
+if os.path.exists(model_path):
     try:
-        # Load the trained model
         with open(model_path, 'rb') as f:
             model = pickle.load(f)
+            st.success("Model loaded successfully.")
     except Exception as e:
         st.error(f"An error occurred while loading the model: {str(e)}")
+else:
+    st.error(f"Model file not found at {model_path}. Please check the path and ensure the file exists.")
 
 
 # Create a function to preprocess the input data
