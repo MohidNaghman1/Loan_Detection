@@ -3,33 +3,14 @@ import pandas as pd
 import pickle
 import os
 import numpy as np
-try:
-    import sklearn
-    st.success("scikit-learn is available.")
-except ImportError:
-    st.error("scikit-learn is not installed.")
 
 # Load the trained model
 model_path = '/mount/src/loan_detection/Loan_detection/model.pkl'
 model = None
 
-# Check if the model file exists
-if os.path.exists(model_path):
-    st.success("Model file found.")
-    try:
-        with open(model_path, 'rb') as f:
-            model = pickle.load(f)
-        st.success("Model loaded successfully.")
-    except Exception as e:
-        st.error(f"An error occurred while loading the model: {str(e)}")
-        st.error("Make sure the model file is not corrupted and all dependencies are installed.")
-else:
-    st.error(f"Model file not found at {model_path}. Please check the path.")
+with open(model_path, 'rb') as f:
+        model = pickle.load(f)
 
-if model is None:
-    st.error("Model is not loaded. Please check the loading process.")
-else:
-    st.success("Model is ready to use.")
 
 def preprocess_data(data):
     data['Gender'] = data['Gender'].map({'Male': 1, 'Female': 0})
@@ -118,4 +99,7 @@ if submitted:
     prediction_result = predict_loan_status(data)
     
     if prediction_result is not None:
-        st.write("Loan Status:", prediction_result)
+        if prediction_result == "Approved":
+            st.success("Loan Status: Approved")
+        else:
+            st.error("Loan Status: Not Approved")
