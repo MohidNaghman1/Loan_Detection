@@ -5,7 +5,7 @@ import os
 import numpy as np
 
 # Load the trained model
-model_path ='Loan_detection/model.pkl'  # Ensure this path is correct
+model_path ='/mount/src/loan_detection/Loan_detection/model.pkl'  # Ensure this path is correct
 model = None
 absolute_path = os.path.abspath(model_path)
 
