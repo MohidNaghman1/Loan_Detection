@@ -20,10 +20,9 @@ if os.path.exists(model_path):
 else:
     st.error(f"Model file not found at {model_path}. Please check the path.")
 
-if model is None:
-    st.error("Model is not loaded. Please check the loading process.")
-else:
-    st.success("Model is ready to use.")
+if model is not None:
+    st.success("Model loaded successfully.")
+    st.write(f"Model type: {type(model)}")
 
 def preprocess_data(data):
     data['Gender'] = data['Gender'].map({'Male': 1, 'Female': 0})
